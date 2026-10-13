@@ -1,0 +1,17 @@
+report_week,region,disease,reported_cases,reporting_facilities
+2026-01-05,Region_A,Malaria,80,12
+2026-01-12,Region_A,Malaria,95,12
+2026-01-19,Region_A,Malaria,110,12
+2026-01-26,Region_A,Malaria,175,12
+2026-02-02,Region_A,Malaria,160,12
+2026-02-09,Region_A,Malaria,140,12
+2026-02-16,Region_A,Malaria,155,12
+2026-02-23,Region_A,Malaria,210,12
+2026-01-05,Region_B,Malaria,35,8
+2026-01-12,Region_B,Malaria,39,8
+2026-01-19,Region_B,Malaria,42,8
+2026-01-26,Region_B,Malaria,48,8
+2026-02-02,Region_B,Malaria,50,8
+2026-02-09,Region_B,Malaria,47,8
+2026-02-16,Region_B,Malaria,53,8
+2026-02-23,Region_B,Malaria,60,8

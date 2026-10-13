@@ -1,0 +1,2 @@
+forecast_week,predicted_cases,random_forest_mae,baseline_mae
+2025-12-29,126.8,7.22,8.19
