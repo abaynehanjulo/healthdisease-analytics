@@ -75,6 +75,47 @@ issues = [
         "resolution_notes": "Synthetic date mapping issue reviewed.",
     },
 ]
+# Add synthetic Region_B issues that match missing facility reports
+region_b_issues = [
+    {
+        "issue_id": "DQ-007",
+        "region": "Region_B",
+        "disease": "Malaria",
+        "facility_id": "Facility_03",
+        "issue_type": "Missing facility report",
+        "assigned_team": "Healthcare Operations",
+        "priority": "High",
+        "status": "Open",
+        "report_week": "2026-01-12",
+        "resolution_notes": "",
+    },
+    {
+        "issue_id": "DQ-008",
+        "region": "Region_B",
+        "disease": "Malaria",
+        "facility_id": "Facility_02",
+        "issue_type": "Missing facility report",
+        "assigned_team": "Healthcare Operations",
+        "priority": "Medium",
+        "status": "Open",
+        "report_week": "2026-02-02",
+        "resolution_notes": "",
+    },
+    {
+        "issue_id": "DQ-009",
+        "region": "Region_B",
+        "disease": "Malaria",
+        "facility_id": "Facility_06",
+        "issue_type": "Missing facility report",
+        "assigned_team": "Healthcare Operations",
+        "priority": "Medium",
+        "status": "In Progress",
+        "report_week": "2026-02-02",
+        "resolution_notes": "Following up on the missing submission.",
+    },
+]
+
+issues.extend(region_b_issues)
 
 df = pd.DataFrame(issues)
 

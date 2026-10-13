@@ -5,3 +5,6 @@ DQ-003,Region_A,Malaria,Facility_02,Reporting pipeline issue,Data Engineering,Hi
 DQ-004,Region_A,Malaria,Facility_05,Reporting pipeline issue,Data Engineering,Medium,In Progress,2026-02-09,Checking ingestion logs.
 DQ-005,Region_A,Malaria,Facility_10,Missing facility report,Healthcare Operations,Low,Open,2026-02-09,
 DQ-006,Region_A,Malaria,Facility_07,Reporting date review,Development Team,Low,Resolved,2026-02-23,Synthetic date mapping issue reviewed.
+DQ-007,Region_B,Malaria,Facility_03,Missing facility report,Healthcare Operations,High,Open,2026-01-12,
+DQ-008,Region_B,Malaria,Facility_02,Missing facility report,Healthcare Operations,Medium,Open,2026-02-02,
+DQ-009,Region_B,Malaria,Facility_06,Missing facility report,Healthcare Operations,Medium,In Progress,2026-02-02,Following up on the missing submission.

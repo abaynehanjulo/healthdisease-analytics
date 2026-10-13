@@ -7,29 +7,38 @@ weeks = pd.date_range(
     freq="7D"
 )
 
-facilities = [
-    f"Facility_{i:02d}"
-    for i in range(1, 13)
-]
+regions = {
+    "Region_A": 12,
+    "Region_B": 8,
+}
 
 records = []
 
-for week_index, week in enumerate(weeks):
-    for facility_index, facility in enumerate(facilities):
-        # Illustrative missing submissions
-        missing = (
-            (week_index == 2 and facility_index in [3, 7])
-            or (week_index == 5 and facility_index in [1, 4, 9])
-            or (week_index == 7 and facility_index == 6)
-        )
+for region, facility_count in regions.items():
+    for week_index, week in enumerate(weeks):
+        for facility_index in range(facility_count):
 
-        records.append({
-            "report_week": week.date(),
-            "region": "Region_A",
-            "disease": "Malaria",
-            "facility_id": facility,
-            "submitted": not missing
-        })
+            facility = f"Facility_{facility_index + 1:02d}"
+
+            if region == "Region_A":
+                missing = (
+                    (week_index == 2 and facility_index in [3, 7])
+                    or (week_index == 5 and facility_index in [1, 4, 9])
+                    or (week_index == 7 and facility_index == 6)
+                )
+            else:
+                missing = (
+                    (week_index == 1 and facility_index == 2)
+                    or (week_index == 4 and facility_index in [1, 5])
+                )
+
+            records.append({
+                "report_week": week.date(),
+                "region": region,
+                "disease": "Malaria",
+                "facility_id": facility,
+                "submitted": not missing
+            })
 
 df = pd.DataFrame(records)
 
@@ -41,6 +50,11 @@ df.to_csv(
 )
 
 print("Facility reporting dataset created.")
-print("Expected submissions:", len(df))
-print("Received submissions:", int(df["submitted"].sum()))
-print("Missing submissions:", int((~df["submitted"]).sum()))
+
+for region in regions:
+    subset = df[df["region"] == region]
+
+    print(f"\n{region}")
+    print("Expected:", len(subset))
+    print("Received:", int(subset["submitted"].sum()))
+    print("Missing:", int((~subset["submitted"]).sum()))
