@@ -203,7 +203,75 @@ if any([
     st.warning("Some data-quality checks require review.")
 else:
     st.success("No issues detected by the implemented checks.")
+# ---------------------------------------
+# FACILITY REPORTING COMPLETENESS
+# ---------------------------------------
 
+from pathlib import Path
+
+st.subheader("🏥 Facility Reporting Completeness")
+
+facility_path = Path("data/facility_reporting.csv")
+
+if facility_path.exists():
+    facility_df = pd.read_csv(facility_path)
+
+    facility_df["report_week"] = pd.to_datetime(
+        facility_df["report_week"]
+    )
+
+    facility_df["submitted"] = (
+        facility_df["submitted"]
+        .astype(str)
+        .str.lower()
+        .eq("true")
+    )
+
+    facility_selected = facility_df[
+        (facility_df["region"] == region)
+        & (facility_df["disease"] == disease)
+    ].copy()
+
+    if not facility_selected.empty:
+        expected = len(facility_selected)
+        received = int(facility_selected["submitted"].sum())
+        missing = expected - received
+        completeness = 100 * received / expected
+
+        f1, f2, f3, f4 = st.columns(4)
+
+        f1.metric("Expected submissions", expected)
+        f2.metric("Received submissions", received)
+        f3.metric("Missing submissions", missing)
+        f4.metric(
+            "Reporting completeness",
+            f"{completeness:.1f}%"
+        )
+
+        missing_reports = facility_selected[
+            ~facility_selected["submitted"]
+        ][["report_week", "facility_id"]]
+
+        with st.expander("View missing facility reports"):
+            st.dataframe(
+                missing_reports,
+                hide_index=True
+            )
+
+        st.caption(
+            "Synthetic facility-level submission data. "
+            "Not linked to the aggregated disease case totals."
+        )
+    else:
+        st.info(
+            "No facility reporting data available "
+            "for the selected region and disease."
+        )
+else:
+    st.info(
+        "Facility reporting dataset not found. "
+        "Run create_facility_data.py first."
+    )
 # Dashboard summary
 c1, c2, c3 = st.columns(3)
 
