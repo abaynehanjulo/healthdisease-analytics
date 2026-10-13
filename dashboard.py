@@ -362,9 +362,50 @@ c3.metric("Reporting facilities", int(selected["reporting_facilities"].iloc[-1])
 
 # Historical trend
 st.subheader("Weekly reported disease cases")
-st.line_chart(
-    selected.set_index("report_week")["reported_cases"]
+# Prepare weekly chart with readable date labels
+# Prepare weekly chart with chronological week labels
+weekly_chart = selected[
+    ["report_week", "reported_cases"]
+].copy()
+
+weekly_chart["report_week"] = pd.to_datetime(
+    weekly_chart["report_week"]
 )
+
+weekly_chart = weekly_chart.sort_values("report_week")
+
+weekly_chart["week_label"] = (
+    weekly_chart["report_week"].dt.strftime("%d %b")
+)
+
+# Explicitly preserve chronological order on the x-axis
+week_order = weekly_chart["week_label"].tolist()
+
+import altair as alt
+
+chart = (
+    alt.Chart(weekly_chart)
+    .mark_line(point=True)
+    .encode(
+        x=alt.X(
+            "week_label:N",
+            sort=week_order,
+            title="Reporting week"
+        ),
+        y=alt.Y(
+            "reported_cases:Q",
+            title="Reported cases",
+            scale=alt.Scale(zero=True)
+        ),
+        tooltip=[
+            alt.Tooltip("week_label:N", title="Week"),
+            alt.Tooltip("reported_cases:Q", title="Cases")
+        ]
+    )
+    .properties(height=350)
+)
+
+st.altair_chart(chart, width="stretch")
 
 # Basic forecast
 st.subheader("Next-week forecast")
