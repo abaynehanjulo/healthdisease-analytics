@@ -1,9 +1,80 @@
-
+import streamlit as st
+import pandas as pd
 import os
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
+
+def calculate_data_quality(data):
+    import pandas as pd
+
+    df = data.copy()
+
+    df["report_week"] = pd.to_datetime(
+        df["report_week"], errors="coerce"
+    )
+
+    df["reported_cases"] = pd.to_numeric(
+        df["reported_cases"], errors="coerce"
+    )
+
+    df["reporting_facilities"] = pd.to_numeric(
+        df["reporting_facilities"], errors="coerce"
+    )
+
+    invalid_dates = int(df["report_week"].isna().sum())
+
+    invalid_cases = int((
+        df["reported_cases"].isna()
+        | (df["reported_cases"] < 0)
+        | (df["reported_cases"] % 1 != 0)
+    ).sum())
+
+    invalid_facilities = int((
+        df["reporting_facilities"].isna()
+        | (df["reporting_facilities"] < 0)
+        | (df["reporting_facilities"] % 1 != 0)
+    ).sum())
+
+    duplicates = int(df.duplicated(
+        subset=["report_week", "region", "disease"]
+    ).sum())
+
+    valid_dates = df["report_week"].dropna()
+
+    if valid_dates.empty:
+        expected_weeks = 0
+        observed_weeks = 0
+        missing_weeks = 0
+    else:
+        expected = pd.date_range(
+            start=valid_dates.min(),
+            end=valid_dates.max(),
+            freq="7D"
+        )
+
+        observed = pd.DatetimeIndex(
+            valid_dates.drop_duplicates()
+        )
+
+        expected_weeks = len(expected)
+        observed_weeks = len(
+            expected.intersection(observed)
+        )
+        missing_weeks = len(
+            expected.difference(observed)
+        )
+
+    return {
+        "expected_weeks": expected_weeks,
+        "observed_weeks": observed_weeks,
+        "missing_weeks": missing_weeks,
+        "duplicates": duplicates,
+        "invalid_dates": invalid_dates,
+        "invalid_cases": invalid_cases,
+        "invalid_facilities": invalid_facilities,
+    }
 
 st.set_page_config(
     page_title="AI Healthcare Dashboard",
@@ -93,6 +164,45 @@ selected = df[
     (df["region"] == region) &
     (df["disease"] == disease)
 ].sort_values("report_week").copy()
+
+# ---------------------------------------
+# DATA QUALITY MONITORING
+# ---------------------------------------
+
+st.subheader("🧪 Data Quality & Reporting Completeness")
+
+quality = calculate_data_quality(selected)
+
+q1, q2, q3, q4 = st.columns(4)
+
+q1.metric("Observed weeks", quality["observed_weeks"])
+q2.metric("Missing weeks", quality["missing_weeks"])
+q3.metric("Duplicate records", quality["duplicates"])
+q4.metric("Invalid case counts", quality["invalid_cases"])
+
+with st.expander("Detailed data-quality checks"):
+    st.write("Expected weeks:", quality["expected_weeks"])
+    st.write("Invalid dates:", quality["invalid_dates"])
+    st.write(
+        "Invalid facility counts:",
+        quality["invalid_facilities"]
+    )
+
+    st.caption(
+        "Checks cover the selected region and disease. "
+        "Facility-level reporting completeness is not measured."
+    )
+
+if any([
+    quality["missing_weeks"],
+    quality["duplicates"],
+    quality["invalid_dates"],
+    quality["invalid_cases"],
+    quality["invalid_facilities"],
+]):
+    st.warning("Some data-quality checks require review.")
+else:
+    st.success("No issues detected by the implemented checks.")
 
 # Dashboard summary
 c1, c2, c3 = st.columns(3)
