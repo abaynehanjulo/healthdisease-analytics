@@ -14,22 +14,50 @@ st.set_page_config(
 st.title("🏥 Healthcare Disease Analytics Dashboard")
 st.caption("Educational project using synthetic healthcare data")
 
-password = os.environ.get("PG_PASSWORD")
+# Database configuration: cloud or local
+cloud_url = os.environ.get("DATABASE_URL")
 
-if not password:
-    st.error("PostgreSQL password variable is missing.")
-    st.stop()
+if not cloud_url:
+    try:
+        cloud_url = st.secrets.get("DATABASE_URL")
+    except FileNotFoundError:
+        cloud_url = None
 
-url = URL.create(
-    "postgresql+psycopg",
-    username="postgres",
-    password=password,
-    host="127.0.0.1",
-    port=5433,
-    database="health_db"
-)
+if cloud_url:
+    # Neon cloud PostgreSQL
+    if cloud_url.startswith("postgresql://"):
+        cloud_url = cloud_url.replace(
+            "postgresql://",
+            "postgresql+psycopg://",
+            1
+        )
 
-engine = create_engine(url)
+    engine = create_engine(
+        cloud_url,
+        pool_pre_ping=True
+    )
+
+else:
+    # Local PostgreSQL fallback
+    password = os.environ.get("PG_PASSWORD")
+
+    if not password:
+        st.error(
+            "Database configuration missing. "
+            "Set DATABASE_URL or PG_PASSWORD."
+        )
+        st.stop()
+
+    url = URL.create(
+        "postgresql+psycopg",
+        username="postgres",
+        password=password,
+        host="127.0.0.1",
+        port=5433,
+        database="health_db"
+    )
+
+    engine = create_engine(url)
 
 @st.cache_data(ttl=60)
 def load_data():
