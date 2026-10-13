@@ -272,6 +272,87 @@ else:
         "Facility reporting dataset not found. "
         "Run create_facility_data.py first."
     )
+# ---------------------------------------
+# DATA QUALITY ISSUES & ACTION TRACKER
+# ---------------------------------------
+
+st.subheader("📋 Data Quality Issues & Action Tracker")
+
+issues_path = Path("data/data_quality_issues.csv")
+
+if issues_path.exists():
+    issues_df = pd.read_csv(
+        issues_path,
+        keep_default_na=False
+    )
+
+    issues_selected = issues_df[
+        (issues_df["region"] == region)
+        & (issues_df["disease"] == disease)
+    ].copy()
+
+    if not issues_selected.empty:
+        total_issues = len(issues_selected)
+        open_issues = int(
+            (issues_selected["status"] == "Open").sum()
+        )
+        in_progress = int(
+            (issues_selected["status"] == "In Progress").sum()
+        )
+        resolved = int(
+            (issues_selected["status"] == "Resolved").sum()
+        )
+
+        i1, i2, i3, i4 = st.columns(4)
+
+        i1.metric("Total issues", total_issues)
+        i2.metric("Open issues", open_issues)
+        i3.metric("In progress", in_progress)
+        i4.metric("Resolved", resolved)
+
+        status_filter = st.selectbox(
+            "Filter issues by status",
+            ["All", "Open", "In Progress", "Resolved"]
+        )
+
+        if status_filter == "All":
+            displayed_issues = issues_selected
+        else:
+            displayed_issues = issues_selected[
+                issues_selected["status"] == status_filter
+            ]
+
+        st.dataframe(
+            displayed_issues[
+                [
+                    "issue_id",
+                    "report_week",
+                    "facility_id",
+                    "issue_type",
+                    "assigned_team",
+                    "priority",
+                    "status",
+                    "resolution_notes",
+                ]
+            ],
+            hide_index=True
+        )
+
+        st.caption(
+            "Read-only synthetic issue register. "
+            "Assignments and statuses are illustrative; "
+            "no notifications or workflow actions are sent."
+        )
+    else:
+        st.info(
+            "No issues available for the selected "
+            "region and disease."
+        )
+else:
+    st.info(
+        "Issue tracker dataset not found. "
+        "Run create_issues_data.py first."
+    )
 # Dashboard summary
 c1, c2, c3 = st.columns(3)
 

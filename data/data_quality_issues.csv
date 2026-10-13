@@ -1,0 +1,7 @@
+issue_id,region,disease,facility_id,issue_type,assigned_team,priority,status,report_week,resolution_notes
+DQ-001,Region_A,Malaria,Facility_04,Missing facility report,Healthcare Operations,High,Open,2026-01-19,
+DQ-002,Region_A,Malaria,Facility_08,Missing facility report,Healthcare Operations,Medium,Open,2026-01-19,
+DQ-003,Region_A,Malaria,Facility_02,Reporting pipeline issue,Data Engineering,High,In Progress,2026-02-09,Investigating missing source submission.
+DQ-004,Region_A,Malaria,Facility_05,Reporting pipeline issue,Data Engineering,Medium,In Progress,2026-02-09,Checking ingestion logs.
+DQ-005,Region_A,Malaria,Facility_10,Missing facility report,Healthcare Operations,Low,Open,2026-02-09,
+DQ-006,Region_A,Malaria,Facility_07,Reporting date review,Development Team,Low,Resolved,2026-02-23,Synthetic date mapping issue reviewed.
